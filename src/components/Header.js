@@ -66,6 +66,13 @@ function Header() {
       </div>
 
       {/* Bottom Nav */}
+      <div className="flex items-center space-x-3 p-2 pl-6 bg-amazon_blue text-white text-sm">
+        <p className="items-center">
+          <span className="font-bold">Disclaimer: </span>
+          This is not the official Amazon Store. It is a redesign, built purely
+          for educational purpose.
+        </p>
+      </div>
       <div className="flex items-center space-x-3 p-2 pl-6 bg-amazon_blue-light text-white text-sm">
         <p className="link flex items-center">
           <MenuIcon className="h-6 mr-1" />
