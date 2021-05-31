@@ -7,12 +7,27 @@ import {
 import { signIn, signOut, useSession } from 'next-auth/client';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
-import { selectItems } from '../slices/basketSlice';
+import { selectTotalItems } from '../slices/basketSlice';
+import SideCart from './SideCart';
+import { useState } from 'react';
+import Currency from 'react-currency-formatter';
+import Highlighter from 'react-highlight-words';
 
-function Header() {
+function Header({ setShowCart, showCart, products }) {
   const [session, loading] = useSession();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showResults, setShowResults] = useState(false);
+  const selectTotalItem = useSelector(selectTotalItems);
   const router = useRouter();
-  const items = useSelector(selectItems);
+
+  const handleSearch = (e) => {
+    let input = e.target.value;
+    setSearchTerm(input);
+    setSearchResults(
+      products?.filter((product) => product.title.includes(input))
+    );
+  };
 
   return (
     <header>
@@ -30,12 +45,73 @@ function Header() {
         </div>
 
         {/* Search */}
-        <div className="hidden sm:flex items-center h-10 rounded-md flex-grow cursor-pointer bg-yellow-400 hover:bg-yellow-500">
+        <div
+          className={`hidden relative sm:flex items-center h-10 rounded-md flex-grow cursor-pointer bg-yellow-400 hover:bg-yellow-500 ${
+            searchTerm && showResults && 'rounded-br-none'
+          }`}
+        >
           <input
-            className="p-2 h-full w-6 flex-grow flex-shrink rounded-l-md focus:outline-none a"
+            onBlur={() => setShowResults(false)}
+            onFocus={() => setShowResults(true)}
+            value={searchTerm}
+            onChange={handleSearch}
+            className={`p-2 h-full w-6 flex-grow flex-shrink rounded-l-md focus:outline-none a ${
+              searchTerm && showResults && 'rounded-bl-none'
+            }`}
             type="text"
           />
           <SearchIcon className="h-12 p-4" />
+
+          {searchTerm && showResults && (
+            <div
+              onClick={() => setShowResults(true)}
+              className="absolute w-full bg-white bottom-0 z-10 rounded-b-md scrollbar-hide"
+              style={{
+                transform: 'translateY(100%)',
+                height: 'auto',
+                maxHeight: '400px',
+                overflowY: 'auto',
+              }}
+            >
+              {!!searchResults?.length ? (
+                searchResults.map(({ id, title, price, category }) => (
+                  <div
+                    onMouseDown={() => router.push(`/products/${id}`)}
+                    key={id}
+                    className="p-2 rounded-md hover:bg-gray-100 border-gray-100 bg-gray-50"
+                  >
+                    <h5 className="font-medium text-sm text-gray-600">
+                      <Highlighter
+                        highlightStyle={{
+                          backgroundColor: 'transparent',
+                          wordBreak: 'break-word',
+                        }}
+                        unhighlightStyle={{
+                          fontWeight: 'bold',
+                          backgroundColor: 'transparent',
+                          wordBreak: 'break-word',
+                        }}
+                        searchWords={[searchTerm]}
+                        autoEscape={true}
+                        textToHighlight={title}
+                      />
+                    </h5>
+                    <p className="text-xs text-gray-400">
+                      {category} <Currency quantity={price} />
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <>
+                  {searchTerm && (
+                    <p className="text-xs text-gray-400 p-2">
+                      No product found
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right */}
@@ -45,7 +121,10 @@ function Header() {
             <p className="font-extrabold md:text-sm">Account & Lists</p>
           </div>
 
-          <div onClick={() => session && router.push('/orders')} className="link">
+          <div
+            onClick={() => session && router.push('/orders')}
+            className="link"
+          >
             <p>Returns</p>
             <p className="font-extrabold md:text-sm">& Orders</p>
           </div>
@@ -55,7 +134,7 @@ function Header() {
             className="relative link flex items-center"
           >
             <span className="absolute top-0 right-0 md:right-10 h-4 w-4 bg-yellow-400 text-center rounded-full text-black font-bold">
-              {items.length}
+              {selectTotalItem}
             </span>
             <ShoppingCartIcon className="h-10" />
             <p className="hidden md:inline font-extrabold md:text-sm mt-2">
@@ -74,7 +153,10 @@ function Header() {
         </p>
       </div>
       <div className="flex items-center space-x-3 p-2 pl-6 bg-amazon_blue-light text-white text-sm">
-        <p className="link flex items-center">
+        <p
+          onClick={() => router.push('/products')}
+          className="link flex items-center"
+        >
           <MenuIcon className="h-6 mr-1" />
           All
         </p>
@@ -87,8 +169,8 @@ function Header() {
         <p className="link hidden lg:inline-flex">Buy Again</p>
         <p className="link hidden lg:inline-flex">Shopper Toolkit</p>
         <p className="link hidden lg:inline-flex">Health & Personal Care</p>
-        <p className="link hidden lg:inline-flex">Electronics</p>
       </div>
+      {showCart && <SideCart setShowCart={setShowCart} />}
     </header>
   );
 }

@@ -14,7 +14,7 @@ export default async (req, res) => {
       unit_amount: item.price * 100,
     },
     description: item.description,
-    quantity: 1,
+    quantity: item.quantity,
   }));
 
   const session = await stripe.checkout.sessions.create({

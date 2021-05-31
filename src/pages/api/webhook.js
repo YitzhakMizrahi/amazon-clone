@@ -22,7 +22,7 @@ const endpointSecret = process.env.STRIPE_SIGNING_SECRET;
 
 const fulfillOrder = async (session) => {
   // DEBUG USE: uncomment to see session contents
-  // console.log("Fulfilling order", session);
+  console.log("Fulfilling order", session);
 
   return app
     .firestore()

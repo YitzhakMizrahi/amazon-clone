@@ -3,6 +3,8 @@ import { StarIcon } from '@heroicons/react/solid';
 import Currency from 'react-currency-formatter';
 import { useDispatch } from 'react-redux';
 import { addToBasket, removeFromBasket } from '../slices/basketSlice';
+import QuantityCount from './QuantityCount';
+import { useState } from 'react';
 
 function CheckoutProduct({
   id,
@@ -13,8 +15,10 @@ function CheckoutProduct({
   category,
   image,
   hasPrime,
+  quantity,
 }) {
   const dispatch = useDispatch();
+  const [quantityUp, setQuantityUp] = useState(quantity);
 
   const addItemToBasket = () => {
     const product = {
@@ -70,10 +74,16 @@ function CheckoutProduct({
 
       {/* Right add/remove buttons */}
       <div className="flex flex-col space-y-2 my-auto justify-self-end">
-        <button onClick={addItemToBasket} className="button">
+        {/* <button onClick={addItemToBasket} className="button">
           Add to Basket
-        </button>
-        <button onClick={removeItemFromBasket} className="button">
+        </button> */}
+        <QuantityCount
+          id={id}
+          dispatch
+          setQuantity={setQuantityUp}
+          quantity={quantityUp}
+        />
+        <button onClick={removeItemFromBasket} className="p-1 sm:p-2 button">
           Remove from Basket
         </button>
       </div>

@@ -2,16 +2,18 @@ import Image from 'next/image';
 import { useSession } from 'next-auth/client';
 import { useSelector } from 'react-redux';
 import Currency from 'react-currency-formatter';
-import { selectItems, selectTotal } from '../slices/basketSlice';
+import { selectItems, selectTotal, selectTotalItems } from '../slices/basketSlice';
 import CheckoutProduct from '../components/CheckoutProduct';
 import Header from '../components/Header';
 import axios from 'axios';
 import { loadStripe } from '@stripe/stripe-js';
+import { isValidElement } from 'react';
 const stripePromise = loadStripe(process.env.stripe_public_key);
 
 function Checkout() {
   const items = useSelector(selectItems);
   const total = useSelector(selectTotal);
+  const selectTotalItem = useSelector(selectTotalItems);
   const [session] = useSession();
 
   const createCheckoutSession = async () => {
@@ -54,7 +56,7 @@ function Checkout() {
 
             {items.map((item, i) => (
               <CheckoutProduct
-                key={i}
+                key={item.id}
                 id={item.id}
                 title={item.title}
                 price={item.price}
@@ -63,6 +65,7 @@ function Checkout() {
                 category={item.category}
                 image={item.image}
                 hasPrime={item.hasPrime}
+                quantity={item.quantity}
               />
             ))}
           </div>
@@ -73,7 +76,7 @@ function Checkout() {
           <div className="flex flex-col bg-white p-10 shadow-md">
             <>
               <h2 className="whitespace-nowrap">
-                Subtotal ({items.length} items):{' '}
+                Subtotal ({selectTotalItem} items):{' '}
                 <span className="font-bold">
                   <Currency quantity={total} currency="USD" />
                 </span>
