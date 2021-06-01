@@ -21,7 +21,7 @@ function SideCart({ setShowCart }) {
   };
 
   return (
-    <div className="fixed w-full h-screen top-0 right-0 z-50 flex justify-end">
+    <div className="hidden fixed w-full h-screen top-0 right-0 z-50 sm:flex justify-end">
       <div className="relative z-30 w-80 bg-white h-screen flex flex-col">
         <div className="text-white bg-amazon_blue py-3 px-3 text-center flex items-center justify-center">
           <ShoppingCartIcon className="h-10" />
