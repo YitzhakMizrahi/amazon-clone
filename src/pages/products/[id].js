@@ -47,7 +47,7 @@ function Details({ product, products }) {
           </span>{' '}
           /{' '}
           <span className="font-medium">
-            <Link href="/products">Product</Link>
+            <Link href="/products">Products</Link>
           </span>{' '}
           / <span className="text-yellow-500 cursor-pointer">{title}</span>
         </div>

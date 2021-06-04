@@ -6,7 +6,7 @@ import Filter from '../../components/Filter';
 import FilteredProducts from '../../components/FilteredProducts';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
-import { addProducts } from '../../slices/basketSlice';
+import { addProducts, restoreBasket } from '../../slices/basketSlice';
 
 function Products({ products }) {
   const dispatch = useDispatch();
@@ -15,6 +15,13 @@ function Products({ products }) {
   useEffect(() => {
     dispatch(addProducts(products));
   }, [products]);
+
+  useEffect(() => {
+    const localBasket = localStorage.getItem('basket');
+    if (localBasket) {
+      dispatch(restoreBasket(JSON.parse(localBasket)));
+    }
+  }, []);
 
   return (
     <>
@@ -32,7 +39,7 @@ function Products({ products }) {
           <span className="font-medium">
             <Link href="/">Home</Link>
           </span>{' '}
-          / <span className="text-yellow-500">Products</span>
+          / <span className="text-yellow-500 cursor-pointer">Products</span>
         </div>
       </div>
 

@@ -96,7 +96,7 @@ function Filter() {
     setShowClear(false);
     setActiveCategory('all');
     setActiveCompany('all');
-    setActiveColor('all');
+    // setActiveColor('all');
     setPrice(priceMax);
   };
 

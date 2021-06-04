@@ -17,8 +17,15 @@ export const basketSlice = createSlice({
     updateFilters: (state, action) => {
       state.filteredProducts = action.payload;
     },
+    restoreBasket: (state, action) => {
+      state.items = action.payload;
+    },
     clearFilters: (state) => {
       state.filteredProducts = state.products;
+    },
+    clearBasket: (state) => {
+      state.items = [];
+      localStorage.removeItem('basket');
     },
     addToBasket: (state, action) => {
       const index = state.items.findIndex(
@@ -27,8 +34,10 @@ export const basketSlice = createSlice({
       if (action.payload.quantity > 0) {
         if (index >= 0) {
           state.items[index].quantity += action.payload.quantity;
+          localStorage.setItem('basket', JSON.stringify([...state.items]));
         } else {
           state.items = [...state.items, action.payload];
+          localStorage.setItem('basket', JSON.stringify([...state.items]));
         }
       }
     },
@@ -40,10 +49,12 @@ export const basketSlice = createSlice({
       if (index >= 0) {
         if (action.payload.quantity > 0) {
           state.items[index].quantity = action.payload.quantity;
+          localStorage.setItem('basket', JSON.stringify([...state.items]));
         } else {
           let newBasket = [...state.items];
           newBasket.splice(index, 1);
           state.items = newBasket;
+          localStorage.setItem('basket', JSON.stringify(newBasket));
         }
       } else
         console.warn(
@@ -63,6 +74,7 @@ export const basketSlice = createSlice({
         );
 
       state.items = newBasket;
+      localStorage.setItem('basket', JSON.stringify(newBasket));
     },
   },
 });
@@ -70,10 +82,12 @@ export const basketSlice = createSlice({
 export const {
   addToBasket,
   removeFromBasket,
+  restoreBasket,
   updateQuantity,
   addProducts,
   updateFilters,
   clearFilters,
+  clearBasket,
 } = basketSlice.actions;
 
 // Selectors - This is how we pull information from the Global store slice

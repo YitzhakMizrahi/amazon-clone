@@ -1,20 +1,34 @@
 import Image from 'next/image';
 import { useSession } from 'next-auth/client';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Currency from 'react-currency-formatter';
-import { selectItems, selectTotal, selectTotalItems } from '../slices/basketSlice';
+import {
+  clearBasket,
+  restoreBasket,
+  selectItems,
+  selectTotal,
+  selectTotalItems,
+} from '../slices/basketSlice';
 import CheckoutProduct from '../components/CheckoutProduct';
 import Header from '../components/Header';
 import axios from 'axios';
 import { loadStripe } from '@stripe/stripe-js';
-import { isValidElement } from 'react';
+import { useEffect } from 'react';
 const stripePromise = loadStripe(process.env.stripe_public_key);
 
 function Checkout() {
+  const dispatch = useDispatch();
   const items = useSelector(selectItems);
   const total = useSelector(selectTotal);
   const selectTotalItem = useSelector(selectTotalItems);
   const [session] = useSession();
+
+  useEffect(() => {
+    const localBasket = localStorage.getItem('basket');
+    if (localBasket) {
+      dispatch(restoreBasket(JSON.parse(localBasket)));
+    }
+  }, []);
 
   const createCheckoutSession = async () => {
     const stripe = await stripePromise;
@@ -24,6 +38,7 @@ function Checkout() {
       items: items,
       email: session.user.email,
     });
+    dispatch(clearBasket());
 
     // Redirect user/customer to Stripe Checkout
     const result = await stripe.redirectToCheckout({
