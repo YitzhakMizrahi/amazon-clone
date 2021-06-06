@@ -3,7 +3,6 @@ import { useSession } from 'next-auth/client';
 import { useDispatch, useSelector } from 'react-redux';
 import Currency from 'react-currency-formatter';
 import {
-  clearBasket,
   restoreBasket,
   selectItems,
   selectTotal,
@@ -38,7 +37,6 @@ function Checkout() {
       items: items,
       email: session.user.email,
     });
-    dispatch(clearBasket());
 
     // Redirect user/customer to Stripe Checkout
     const result = await stripe.redirectToCheckout({
