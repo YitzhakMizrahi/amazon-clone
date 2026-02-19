@@ -55,13 +55,22 @@ export default function Home({ products }) {
   );
 }
 
-// GET >>> https://fakestoreapi.com/products
 export const getServerSideProps = async (ctx) => {
   const session = await getSession(ctx);
 
-  const products = await fetch('https://fakestoreapi.com/products').then(
-    (res) => res.json()
-  );
+  let products = [];
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch('https://fakestoreapi.com/products', {
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error(`API returned ${res.status}`);
+    products = await res.json();
+  } catch (e) {
+    // API unreachable or slow — render homepage with empty products
+  }
 
   return {
     props: {
