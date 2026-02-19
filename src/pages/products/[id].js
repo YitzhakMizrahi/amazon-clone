@@ -183,32 +183,34 @@ function Details({ product, products }) {
 export default Details;
 
 export const getStaticPaths = async () => {
-  const products = await fetch('https://fakestoreapi.com/products').then(
-    (res) => res.json()
-  );
-
-  const paths = products.map((product) => {
-    return {
+  try {
+    const res = await fetch('https://fakestoreapi.com/products');
+    if (!res.ok) throw new Error(`API returned ${res.status}`);
+    const products = await res.json();
+    const paths = products.map((product) => ({
       params: { id: product.id.toString() },
-    };
-  });
-
-  return {
-    paths,
-    fallback: false,
-  };
+    }));
+    return { paths, fallback: 'blocking' };
+  } catch (e) {
+    return { paths: [], fallback: 'blocking' };
+  }
 };
 
 export const getStaticProps = async (ctx) => {
-  const id = ctx.params.id;
-  const product = await fetch(`https://fakestoreapi.com/products/${id}`).then(
-    (res) => res.json()
-  );
-  const products = await fetch('https://fakestoreapi.com/products').then(
-    (res) => res.json()
-  );
-
-  return {
-    props: { product, products },
-  };
+  try {
+    const id = ctx.params.id;
+    const [product, products] = await Promise.all([
+      fetch(`https://fakestoreapi.com/products/${id}`).then((res) => {
+        if (!res.ok) throw new Error(`API returned ${res.status}`);
+        return res.json();
+      }),
+      fetch('https://fakestoreapi.com/products').then((res) => {
+        if (!res.ok) throw new Error(`API returned ${res.status}`);
+        return res.json();
+      }),
+    ]);
+    return { props: { product, products }, revalidate: 3600 };
+  } catch (e) {
+    return { notFound: true };
+  }
 };

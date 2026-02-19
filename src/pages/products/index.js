@@ -61,12 +61,13 @@ function Products({ products }) {
 
 export default Products;
 
-export const getStaticProps = async (ctx) => {
-  const products = await fetch('https://fakestoreapi.com/products').then(
-    (res) => res.json()
-  );
-
-  return {
-    props: { products },
-  };
+export const getStaticProps = async () => {
+  try {
+    const res = await fetch('https://fakestoreapi.com/products');
+    if (!res.ok) throw new Error(`API returned ${res.status}`);
+    const products = await res.json();
+    return { props: { products }, revalidate: 3600 };
+  } catch (e) {
+    return { props: { products: [] }, revalidate: 60 };
+  }
 };
