@@ -66,6 +66,7 @@ function Details({ product, products }) {
                 objectFit="cover"
                 src={image}
                 alt=""
+                unoptimized
               />
             </div>
             <div className="flex items-center">
@@ -78,6 +79,7 @@ function Details({ product, products }) {
                     objectFit="cover"
                     src={image}
                     alt=""
+                    unoptimized
                   />
                 </div>
               )}

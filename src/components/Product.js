@@ -48,7 +48,7 @@ function Product({ id, title, price, description, category, image, setShowCart, 
             <p className="absolute top-2 right-2 text-xs italic text-gray-400">
               {category}
             </p>
-            <Image src={image} height={200} width={200} objectFit="contain" />
+            <Image src={image} height={200} width={200} objectFit="contain" unoptimized />
             <h4 className="my-3">{title}</h4>
             <div className="flex">
               {Array(rating)
