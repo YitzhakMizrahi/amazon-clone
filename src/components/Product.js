@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { useState } from 'react';
 import { StarIcon } from '@heroicons/react/solid';
 import Currency from 'react-currency-formatter';
@@ -48,7 +47,8 @@ function Product({ id, title, price, description, category, image, setShowCart, 
             <p className="absolute top-2 right-2 text-xs italic text-gray-400">
               {category}
             </p>
-            <Image src={image} height={200} width={200} objectFit="contain" unoptimized />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={image} className="object-contain h-48 w-48 mx-auto" alt={title} referrerPolicy="no-referrer" />
             <h4 className="my-3">{title}</h4>
             <div className="flex">
               {Array(rating)

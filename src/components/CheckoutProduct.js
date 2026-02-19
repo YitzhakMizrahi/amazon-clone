@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { StarIcon } from '@heroicons/react/solid';
 import Currency from 'react-currency-formatter';
 import { useDispatch } from 'react-redux';
@@ -43,7 +42,8 @@ function CheckoutProduct({
 
   return (
     <div className="grid grid-cols-5">
-      <Image src={image} height={200} width={200} objectFit="contain" unoptimized />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={image} className="object-contain h-48 w-48" alt={title} referrerPolicy="no-referrer" />
 
       {/* Middle */}
       <div className="col-span-3 mx-5">

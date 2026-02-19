@@ -57,29 +57,23 @@ function Details({ product, products }) {
         <div className="flex flex-wrap">
           <div className="px-5 mb-7 w-full md:w-7/12">
             <div className="w-full mb-4">
-              <Image
-                className={
-                  'w-full rounded-lg transition-all transform hover:scale-125 duration-300'
-                }
-                width={700}
-                height={500}
-                objectFit="cover"
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="w-full rounded-lg transition-all transform hover:scale-125 duration-300 object-cover"
                 src={image}
-                alt=""
-                unoptimized
+                alt={title}
+                referrerPolicy="no-referrer"
               />
             </div>
             <div className="flex items-center">
               {image && (
                 <div className="mr-3 mb-3 cursor-pointer" key={image.id}>
-                  <Image
-                    className="rounded-md"
-                    width={100}
-                    height={100}
-                    objectFit="cover"
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    className="rounded-md object-cover w-24 h-24"
                     src={image}
-                    alt=""
-                    unoptimized
+                    alt={title}
+                    referrerPolicy="no-referrer"
                   />
                 </div>
               )}
