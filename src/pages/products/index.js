@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import localProducts from '../../../products/products';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import Filter from '../../components/Filter';
@@ -62,12 +63,12 @@ function Products({ products }) {
 export default Products;
 
 export const getStaticProps = async () => {
+  let products = localProducts;
   try {
     const res = await fetch('https://fakestoreapi.com/products');
-    if (!res.ok) throw new Error(`API returned ${res.status}`);
-    const products = await res.json();
-    return { props: { products }, revalidate: 3600 };
+    if (res.ok) products = await res.json();
   } catch (e) {
-    return { props: { products: [] }, revalidate: 60 };
+    // API unreachable — use local product data as fallback
   }
+  return { props: { products }, revalidate: 3600 };
 };

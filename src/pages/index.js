@@ -1,4 +1,3 @@
-import { getSession } from 'next-auth/client';
 import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
@@ -7,6 +6,7 @@ import Footer from '../components/Footer';
 import Header from '../components/Header';
 import ProductFeed from '../components/ProductFeed';
 import { addProducts, restoreBasket } from '../slices/basketSlice';
+import localProducts from '../../products/products';
 
 const MAX_RATING = 5;
 const MIN_RATING = 1;
@@ -55,10 +55,8 @@ export default function Home({ products }) {
   );
 }
 
-export const getServerSideProps = async (ctx) => {
-  const session = await getSession(ctx);
-
-  let products = [];
+export const getStaticProps = async () => {
+  let products = localProducts;
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
@@ -66,16 +64,13 @@ export const getServerSideProps = async (ctx) => {
       signal: controller.signal,
     });
     clearTimeout(timeout);
-    if (!res.ok) throw new Error(`API returned ${res.status}`);
-    products = await res.json();
+    if (res.ok) products = await res.json();
   } catch (e) {
-    // API unreachable or slow — render homepage with empty products
+    // API unreachable — use local product data as fallback
   }
 
   return {
-    props: {
-      session,
-      products,
-    },
+    props: { products },
+    revalidate: 3600,
   };
 };

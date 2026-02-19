@@ -1,6 +1,7 @@
 import Header from '../../components/Header';
 import Link from 'next/link';
 import Image from 'next/image';
+import localProducts from '../../../products/products';
 import { StarIcon } from '@heroicons/react/solid';
 import { useState } from 'react';
 import Currency from 'react-currency-formatter';
@@ -183,34 +184,28 @@ function Details({ product, products }) {
 export default Details;
 
 export const getStaticPaths = async () => {
-  try {
-    const res = await fetch('https://fakestoreapi.com/products');
-    if (!res.ok) throw new Error(`API returned ${res.status}`);
-    const products = await res.json();
-    const paths = products.map((product) => ({
-      params: { id: product.id.toString() },
-    }));
-    return { paths, fallback: 'blocking' };
-  } catch (e) {
-    return { paths: [], fallback: 'blocking' };
-  }
+  const paths = localProducts.map((product) => ({
+    params: { id: product.id.toString() },
+  }));
+  return { paths, fallback: 'blocking' };
 };
 
 export const getStaticProps = async (ctx) => {
+  const id = Number(ctx.params.id);
+  let product = localProducts.find((p) => p.id === id) || null;
+  let products = localProducts;
+
   try {
-    const id = ctx.params.id;
-    const [product, products] = await Promise.all([
-      fetch(`https://fakestoreapi.com/products/${id}`).then((res) => {
-        if (!res.ok) throw new Error(`API returned ${res.status}`);
-        return res.json();
-      }),
-      fetch('https://fakestoreapi.com/products').then((res) => {
-        if (!res.ok) throw new Error(`API returned ${res.status}`);
-        return res.json();
-      }),
+    const [productRes, productsRes] = await Promise.all([
+      fetch(`https://fakestoreapi.com/products/${id}`),
+      fetch('https://fakestoreapi.com/products'),
     ]);
-    return { props: { product, products }, revalidate: 3600 };
+    if (productRes.ok) product = await productRes.json();
+    if (productsRes.ok) products = await productsRes.json();
   } catch (e) {
-    return { notFound: true };
+    // API unreachable — use local product data as fallback
   }
+
+  if (!product) return { notFound: true };
+  return { props: { product, products }, revalidate: 3600 };
 };
